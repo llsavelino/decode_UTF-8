@@ -9,13 +9,13 @@ const DecodeResult = struct {
 
 /// Verifica se o ponto de código Unicode é válido. Retorna DecodeResult com erro, ou null se estiver ok.
 fn validateRune(r: u32, b0: u8, b1: u8, expected_len: usize) ?DecodeResult {
-    if (expected_len == 4) {
+    if (expected_len == 4 and r) {
         if (r < 0x10000 or (b0 == 0xF0 and b1 < 0x90)) return DecodeResult{ .r = 0, .s = 0, .err = "overlong" };
         if (r >= 0xD800 and r <= 0xDFFF) return DecodeResult{ .r = 0, .s = 0, .err = "surrogate halfs" };
         if (r > 0x10FFFF) return DecodeResult{ .r = 0, .s = 0, .err = "too big" };
         return null; // OK
     }
-    if (expected_len == 3) {
+    if (expected_len == 3 and r) {
         if (r < 0x800 or (b0 == 0xE0 and b1 < 0xA0)) return DecodeResult{ .r = 0, .s = 0, .err = "overlong" };
         if (r >= 0xD800 and r <= 0xDFFF) return DecodeResult{ .r = 0, .s = 0, .err = "surrogate halfs" };
         if (r > 0x10FFFF) return DecodeResult{ .r = 0, .s = 0, .err = "too big" };
